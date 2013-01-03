@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Iterator;
+import java.util.concurrent.Callable;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
@@ -13,7 +14,7 @@ import javax.imageio.stream.ImageInputStream;
  *
  * @author daoyu
  */
-public class ImgDownloadThread extends Thread {
+public class ImgDownloadThread implements Callable {
 
     private int height, width;
     private String fileName, filePath;
@@ -68,7 +69,7 @@ public class ImgDownloadThread extends Thread {
     }
 
     @Override
-    public void run() {        
+    public Object call() {
         String localName = getRealName(fileName);
         String format = getFormat(localName);
 
@@ -108,14 +109,12 @@ public class ImgDownloadThread extends Thread {
                                 view.log("无法关闭文件读取流。");
                             }
                         }
-
                         ir.abort();
                         ir.dispose();
                     }
                 }
-
-                return;
             }
         }
+        return new Object();
     }
 }

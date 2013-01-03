@@ -10,6 +10,9 @@ import img_getter.Img_getterView;
 import img_getter.img.ImgDownloadThread;
 import java.io.File;
 import java.util.Iterator;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -141,7 +144,7 @@ public abstract class BaseParser implements Runnable {
      * @parameter String baseUrl 图像下载地址的前缀
      */
     public void download(Iterator<String> it, boolean wait, String baseUrl) throws InterruptedException {
-        Thread[] ts = new Thread[MAX_THREADS]; //创建等待下载图片的线程。
+        ThreadPoolExecutor executor = (ThreadPoolExecutor)Executors.newFixedThreadPool(8);
 
         while (it.hasNext()) {
             String imgUrl = it.next();
@@ -151,31 +154,13 @@ public abstract class BaseParser implements Runnable {
             if (null != baseUrl) {
                 imgUrl = baseUrl + imgUrl;
             }
-
-            downloadNext:
-            {
-                while (true) {
-                    for (int i = 0; i < MAX_THREADS; i++) {
-                        if (ts[i] == null || !ts[i].isAlive()) { //遍历找到一个可用的线程
-                            ts[i] = new ImgDownloadThread(imgUrl, width, height, path, acceptFormats, view);
-                            ts[i].start();
-//                        view.log("使用线程" + i);
-
-                            break downloadNext;
-                        }
-                    }
-
-                    Thread.sleep(100);
-                }
-            }
+            
+            executor.submit(new ImgDownloadThread(imgUrl, width, height, path, acceptFormats, view));
         }
 
+        executor.shutdown();
         if (wait) {
-            for (int i = 0; i < ts.length; i++) {
-                if (ts[i] != null) {
-                    ts[i].join();
-                }
-            }
+            executor.awaitTermination(1, TimeUnit.DAYS);
         }
     }
 

@@ -4,6 +4,11 @@
 package img_getter.img;
 
 import img_getter.Img_getterView;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -82,6 +87,7 @@ public class ImgSeqGetter extends Thread {
 
     @Override
     public void run() {
+        ThreadPoolExecutor executor = (ThreadPoolExecutor)Executors.newFixedThreadPool(10);
         this.height = Integer.parseInt(view.getMinHeight());
         this.width = Integer.parseInt(view.getMinWidth());
         this.path = view.getPath();
@@ -89,26 +95,14 @@ public class ImgSeqGetter extends Thread {
 
         String[] imgUrls = getImgUrls();
         if (imgUrls != null) {
-//            for (String img:imgUrls){
-//                view.log(img);
-//            }
-            Thread[] threads = new Thread[imgUrls.length];
-            int i = 0;
             for (String imgUrl : imgUrls) {
-                threads[i] = new ImgDownloadThread(imgUrl, width, height, path, acceptFormats, view);
-                threads[i].start();
-                i++;
+                executor.submit(new ImgDownloadThread(imgUrl, width, height, path, acceptFormats, view));
             }
-
-            for (Thread t : threads) {
-                try {
-                    t.join();
-                } catch (InterruptedException ex) {
-                    view.log("多线程下载异常！可能是由于太多图片");
-                }
+            try {
+                executor.awaitTermination(1, TimeUnit.DAYS);
+            } catch (InterruptedException ex) {
+                view.log("线程被终止，下载结束！");
             }
-
-            view.log("下载完毕！");
         }
     }
 //    public static void main(String []args){
