@@ -12,6 +12,8 @@ import java.awt.datatransfer.FlavorListener;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -52,6 +54,15 @@ public class ClipboardListener implements FlavorListener, ClipboardOwner {
             this.clip.removeFlavorListener(this);
             this.clip.setContents(this.clip.getContents(null), this);
             this.clip.addFlavorListener(this);
+        }
+    }
+
+    public static String getAbsolutePath(String input){
+        try {
+            URL u = new URL(input);
+            return String.format("%s://%s/", u.getProtocol(), u.getHost());
+        } catch (MalformedURLException ex) {
+            return "";
         }
     }
 

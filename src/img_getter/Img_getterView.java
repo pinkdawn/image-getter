@@ -535,6 +535,9 @@ public class Img_getterView extends FrameView {
 
     @Action
     public void listImg() {
+        if(baseUrl.getText().length() == 0){
+            baseUrl.setText(ClipboardListener.getAbsolutePath(urlText.getText()));
+        }
         enableDownloadButton(false);
         Thread t = new Thread(parser);
         t.start();
@@ -599,9 +602,9 @@ public class Img_getterView extends FrameView {
 
     public void setUrl(String _url) {
         urlText.setText(_url);
-        urlText.requestFocus();
+        urlText.requestFocus();       
     }
-
+    
     public String getImgBeginUrl() {
         return imgBeginUrl.getText();
     }

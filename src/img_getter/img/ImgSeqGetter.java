@@ -98,6 +98,8 @@ public class ImgSeqGetter extends Thread {
             for (String imgUrl : imgUrls) {
                 executor.submit(new ImgDownloadThread(imgUrl, width, height, path, acceptFormats, view));
             }
+
+            executor.shutdown();
             try {
                 executor.awaitTermination(1, TimeUnit.DAYS);
             } catch (InterruptedException ex) {
