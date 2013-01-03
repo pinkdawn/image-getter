@@ -3,15 +3,9 @@ package img_getter.img.handler;
 import img_getter.img.parser.BaseParser;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- *
- * @author daoyu
- */
 public class ContentHandler extends BaseHandlerImpl {
 
     static String join(String[] s, String delimiter) {
@@ -54,13 +48,6 @@ public class ContentHandler extends BaseHandlerImpl {
         Matcher m = re.matcher(s);
         while (m.find()) {
             System.out.println(m.group(0));
-        }
-
-        try {
-            URL u = new URL("http://aa.yy/cc/ddd/?.jpg");
-            System.out.println(String.format("%s://%s/", u.getProtocol(), u.getHost()));
-        } catch (MalformedURLException ex) {
-            
         }
     }
 }
