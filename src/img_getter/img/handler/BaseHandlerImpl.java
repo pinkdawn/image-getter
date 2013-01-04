@@ -1,32 +1,24 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package img_getter.img.handler;
 
-import img_getter.img.parser.BaseParser;
 import img_getter.utils.UrlUtils;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- *
- * @author zhuangdy1
- */
 public class BaseHandlerImpl implements BaseHandler {
 
-    Vector<String> img;
-    Vector<String> extImg;
+    List<String> img;
+    List<String> extImg;
 
     public BaseHandlerImpl() {
-        img = new Vector<String>();
-        extImg = new Vector<String>();
+        img = new ArrayList<String>();
+        extImg = new ArrayList<String>();
     }
 
-    public Vector<String> getExtImg() {
+    public List<String> getExtImg() {
         return extImg;
     }
 
-    public Vector<String> getImg() {
+    public List<String> getImg() {
         return img;
     }
 

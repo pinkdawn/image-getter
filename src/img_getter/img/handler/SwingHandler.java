@@ -8,7 +8,8 @@
 package img_getter.img.handler;
 
 import img_getter.utils.UrlUtils;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLEditorKit;
@@ -18,12 +19,12 @@ import javax.swing.text.html.HTMLEditorKit;
  * @author daoyu
  */
 public class SwingHandler extends HTMLEditorKit.ParserCallback implements BaseHandler{
-    private Vector<String> img;
-    private Vector<String> extImg;
+    private List<String> img;
+    private List<String> extImg;
 
     public SwingHandler(){
-        img = new Vector<String>();
-        extImg = new Vector<String>();
+        img = new ArrayList<String>();
+        extImg = new ArrayList<String>();
     }
 
     public static boolean isImg(String value){
@@ -53,11 +54,11 @@ public class SwingHandler extends HTMLEditorKit.ParserCallback implements BaseHa
         }
     }
 
-    public Vector<String> getExtImg() {
+    public List<String> getExtImg() {
         return extImg;
     }
 
-    public Vector<String> getImg() {
+    public List<String> getImg() {
         return img;
     }
 

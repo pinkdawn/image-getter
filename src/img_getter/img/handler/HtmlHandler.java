@@ -3,7 +3,6 @@
  */
 package img_getter.img.handler;
 
-import java.util.Vector;
 import org.htmlparser.NodeFilter;
 import org.htmlparser.Parser;
 import org.htmlparser.filters.TagNameFilter;

@@ -1,6 +1,6 @@
 package img_getter.img.handler;
 
-import java.util.Vector;
+import java.util.List;
 
 /**
  *
@@ -9,14 +9,14 @@ import java.util.Vector;
 public interface BaseHandler {
 
     /*
-     * @return Vector<String> the external image URL list, like "http://xmwq.net/icon.jpg"
+     * @return List<String> the external image URL list, like "http://xmwq.net/icon.jpg"
      */
-    public Vector<String> getExtImg();
+    public List<String> getExtImg();
 
     /*
-     * @return Vector<String> the internal image URL list, like "/icon.jpg"
+     * @return List<String> the internal image URL list, like "/icon.jpg"
      */
-    public Vector<String> getImg();
+    public List<String> getImg();
 
     /*
      * Empty the internal and external list. Try not to download the images twice.
