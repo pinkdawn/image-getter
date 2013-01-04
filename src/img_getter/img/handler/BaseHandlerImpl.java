@@ -5,6 +5,7 @@
 package img_getter.img.handler;
 
 import img_getter.img.parser.BaseParser;
+import img_getter.utils.UrlUtils;
 import java.util.Vector;
 
 /**
@@ -39,10 +40,10 @@ public class BaseHandlerImpl implements BaseHandler {
     }
 
     public void addExtImg(String link) {
-        String new_link = BaseParser.get_absolute_url(link);
+        String new_link = UrlUtils.getAbsoluteUrl(link);
 
         for (String _link : extImg) {
-            String old_link = BaseParser.get_absolute_url(_link);
+            String old_link = UrlUtils.getAbsoluteUrl(_link);
             if (old_link.startsWith(new_link)) {
                 extImg.remove(_link);
                 extImg.add(link);

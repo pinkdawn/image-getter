@@ -1,6 +1,6 @@
 package img_getter.img.handler;
 
-import img_getter.img.parser.BaseParser;
+import img_getter.utils.UrlUtils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.regex.Matcher;
@@ -20,7 +20,7 @@ public class ContentHandler extends BaseHandlerImpl {
         }
         return builder.toString();
     }
-    static final String reStr = String.format("((http|/)[:\\w-\\./\\?%s&=]*\\.(%s))", "%", join(BaseParser.IMAGE_FORMATS, "|").replace(".", ""));
+    static final String reStr = String.format("((http|/)[:\\w-\\./\\?%s&=]*\\.(%s))", "%", join(UrlUtils.IMAGE_FORMATS, "|").replace(".", ""));
     static Pattern re = Pattern.compile(reStr);
 
     /*

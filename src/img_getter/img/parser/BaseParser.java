@@ -8,6 +8,7 @@ package img_getter.img.parser;
 import img_getter.img.handler.BaseHandler;
 import img_getter.Img_getterView;
 import img_getter.img.ImgDownloadThread;
+import img_getter.utils.UrlUtils;
 import java.io.File;
 import java.util.Iterator;
 import java.util.concurrent.Executors;
@@ -21,29 +22,13 @@ import java.util.regex.Pattern;
  * @author daoyu
  */
 public abstract class BaseParser implements Runnable {
-
-    private final int MAX_THREADS = 10;
     private Img_getterView view;
-    private String url, path;
-    private int height, width;
-    public static final String[] IMAGE_FORMATS = {".jpg", ".png", ".bmp", ".gif"};
-    public static final String[] WEB_PROTOCOLS = {"http://", "https://", "ftp://"};
-    private String[] acceptFormats;
-
-    public static String get_absolute_url(String link){
-        link = link.toLowerCase();
-        for (String s: BaseParser.WEB_PROTOCOLS){            
-            link = link.replaceAll(s, "");
-        }
-        for (String s: BaseParser.IMAGE_FORMATS){
-            link = link.replaceAll(s, "");
-        }
-        
-        return link;
-    }
+    private String url, path, baseUrl;
+    private int height, width;    
+    private String[] acceptFormats;    
 
     public BaseParser(Img_getterView _view) {
-        this.view = _view;
+        this.view = _view;        
     }
 
     /*
@@ -56,7 +41,8 @@ public abstract class BaseParser implements Runnable {
         this.height = Integer.parseInt(view.getMinHeight());
         this.width = Integer.parseInt(view.getMinWidth());
         this.path = view.getPath();
-        acceptFormats = view.getImgFormats().split(" ");
+        this.baseUrl = UrlUtils.getAbsolutePath(view.getUrl());
+        this.acceptFormats = view.getImgFormats().split(" ");
 
         File pathDir = new File(path);
         pathDir.setReadable(true);
@@ -102,6 +88,10 @@ public abstract class BaseParser implements Runnable {
 
     public Img_getterView getView() {
         return view;
+    }
+
+    public String getBaseUrl() {
+        return baseUrl;
     }
 
     public void setView(Img_getterView view) {
@@ -178,10 +168,10 @@ public abstract class BaseParser implements Runnable {
             download(it, true, null);
 
             it = getHandler().getImg().iterator();
-            if (it.hasNext() && (view.getBaseUrl() == null || view.getBaseUrl().isEmpty())) {
+            if (it.hasNext() && (getBaseUrl() == null || getBaseUrl().isEmpty())) {
                 view.log("找到站内图片，但是未设置网站根目录，请设置。例如：\nhttp://www.35.com/abc/abc.jpg，请设置为\nhttp://www.35.com/ 注意最后的/。");
             } else {
-                download(it, true, view.getBaseUrl());
+                download(it, true, getBaseUrl());
             }
 
             view.log("下载完毕！");

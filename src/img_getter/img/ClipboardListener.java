@@ -57,15 +57,6 @@ public class ClipboardListener implements FlavorListener, ClipboardOwner {
         }
     }
 
-    public static String getAbsolutePath(String input){
-        try {
-            URL u = new URL(input);
-            return String.format("%s://%s/", u.getProtocol(), u.getHost());
-        } catch (MalformedURLException ex) {
-            return "";
-        }
-    }
-
     public void lostOwnership(Clipboard clipboard, Transferable contents) {
         //
     }
