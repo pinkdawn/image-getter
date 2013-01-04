@@ -1,7 +1,7 @@
 /*
  * 从系统剪切板获取copy到的要下载的地址，并且自动放到下载栏中。
  */
-package img_getter.img;
+package img_getter.utils;
 
 import img_getter.Img_getterView;
 import java.awt.datatransfer.Clipboard;
@@ -12,8 +12,6 @@ import java.awt.datatransfer.FlavorListener;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 

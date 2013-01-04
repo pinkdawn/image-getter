@@ -3,7 +3,7 @@
  */
 package img_getter;
 
-import img_getter.img.ClipboardListener;
+import img_getter.utils.ClipboardListener;
 import img_getter.img.handler.BaseHandler;
 import img_getter.img.handler.SwingHandler;
 import img_getter.img.ImgSeqGetter;
