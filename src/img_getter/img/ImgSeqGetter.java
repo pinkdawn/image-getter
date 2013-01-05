@@ -7,8 +7,6 @@ import img_getter.Img_getterView;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -17,9 +15,6 @@ import java.util.logging.Logger;
 public class ImgSeqGetter extends Thread {
 
     private Img_getterView view;
-    private int height, width;
-    String path;
-    private String[] acceptFormats;
 
     public ImgSeqGetter(Img_getterView _view) {
         this.view = _view;
@@ -88,15 +83,11 @@ public class ImgSeqGetter extends Thread {
     @Override
     public void run() {
         ThreadPoolExecutor executor = (ThreadPoolExecutor)Executors.newFixedThreadPool(10);
-        this.height = Integer.parseInt(view.getMinHeight());
-        this.width = Integer.parseInt(view.getMinWidth());
-        this.path = view.getPath();
-        this.acceptFormats = view.getImgFormats().split(" ");
 
         String[] imgUrls = getImgUrls();
         if (imgUrls != null) {
             for (String imgUrl : imgUrls) {
-                executor.submit(new ImgDownloadThread(imgUrl, width, height, path, acceptFormats, view));
+                executor.submit(new ImgDownloadThread(imgUrl, view));
             }
 
             executor.shutdown();

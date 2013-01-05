@@ -10,25 +10,19 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 
-/**
- *
- * @author daoyu
- */
 public class ImgDownloadThread implements Callable {
-
     private int height, width;
     private String fileName, filePath;
     private Img_getterView view;
     private String[] acceptFormats;
 
-    public ImgDownloadThread(String fn, int w, int h,
-            String _filePath, String[] _acceptFormats, Img_getterView _view) {
+    public ImgDownloadThread(String fn, Img_getterView _view) {
         fileName = fn;
-        width = w;
-        height = h;
-
-        filePath = _filePath;
-        acceptFormats = _acceptFormats;
+        view = _view;
+        width = Integer.parseInt(view.getMinWidth());
+        height = Integer.parseInt(view.getMinHeight());
+        filePath = view.getPath();
+        acceptFormats = view.getImgFormats().split(" ");
         view = _view;
     }
 
@@ -49,7 +43,7 @@ public class ImgDownloadThread implements Callable {
      * @parameter fullUrl the full http image url, e.g. http://xmwq.net/icon.jpg?h=200&w=300
      * @parameter real name of the image, e.g. icon.jpg
      */
-    private String getRealName(String fullUrl) {
+    private static String getRealName(String fullUrl) {
         String realName = fullUrl.substring(fullUrl.lastIndexOf("/") + 1);
         if (realName.contains("?")) {
             realName = realName.substring(0, realName.indexOf("?"));
@@ -67,6 +61,21 @@ public class ImgDownloadThread implements Callable {
     private String getFormat(String fileName) {
         return fileName.substring(fileName.lastIndexOf(".") + 1);
     }
+    
+    private void CheckPathExists(){
+        File pathDir = new File(filePath);
+        pathDir.setReadable(true);
+        pathDir.setWritable(true);
+
+        if (!pathDir.exists()) { //如果指定文件夹不存在，则创建
+            boolean success = pathDir.mkdirs();
+            if (!success) {
+                view.log("无法创建下载文件夹！");
+            } else {
+                view.log("创建文件夹: " + filePath);
+            }
+        }
+    }
 
     @Override
     public Object call() {
@@ -82,17 +91,17 @@ public class ImgDownloadThread implements Callable {
                     ir.setInput(ImageIO.createImageInputStream(new URL(fileName).openStream()));
 
                     if (this.checkImg(ir)) { // 然后打开 图片头部，检查是否符合 图片大小要求。
-                        StringBuilder sb = new StringBuilder();
-                        sb.append(filePath).append(localName);
+                        CheckPathExists();
+                        String destFileName = String.format("%s%s", filePath, localName);
 
-                        File outTemp = new File(sb.toString()); //检查是否已有重名文件
+                        File outTemp = new File(destFileName); //检查是否已有重名文件
 //                        while (outTemp.exists()) {
 //                            sb.insert(filePath.length(), "_");
 //                            outTemp = new File(sb.toString());
 //                        }
                         if (! outTemp.exists()){
                             ImageIO.write(ir.read(0), format, outTemp);
-                            view.log("成功下载: " + sb.toString());
+                            view.log("成功下载: " + destFileName);
                         }
                     }
                 } catch (IllegalArgumentException iie) {

@@ -5,27 +5,20 @@
  */
 package img_getter.img.parser;
 
-import img_getter.img.handler.BaseHandler;
 import img_getter.Img_getterView;
 import img_getter.img.ImgDownloadThread;
+import img_getter.img.handler.BaseHandler;
 import img_getter.utils.UrlUtils;
-import java.io.File;
-import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- *
- * @author daoyu
- */
 public abstract class BaseParser implements Runnable {
     private Img_getterView view;
-    private String url, path, baseUrl;
-    private int height, width;    
-    private String[] acceptFormats;    
+    private String url, baseUrl;
 
     public BaseParser(Img_getterView _view) {
         this.view = _view;        
@@ -38,45 +31,12 @@ public abstract class BaseParser implements Runnable {
      */
     public void getInput() {
         this.url = view.getUrl();
-        this.height = Integer.parseInt(view.getMinHeight());
-        this.width = Integer.parseInt(view.getMinWidth());
-        this.path = view.getPath();
         this.baseUrl = UrlUtils.getAbsolutePath(view.getUrl());
-        this.acceptFormats = view.getImgFormats().split(" ");
-
-        File pathDir = new File(path);
-        pathDir.setReadable(true);
-        pathDir.setWritable(true);
-
-        if (!pathDir.exists()) { //如果指定文件夹不存在，则创建
-            boolean success = pathDir.mkdirs();
-            if (!success) {
-                view.log("无法创建下载文件夹！");
-            } else {
-                view.log("创建文件夹: " + path);
-            }
-        }
     }
 
     public abstract void setHandler(BaseHandler _handler);
 
     public abstract BaseHandler getHandler();
-
-    public int getHeight() {
-        return height;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
 
     public String getUrl() {
         return url;
@@ -96,14 +56,6 @@ public abstract class BaseParser implements Runnable {
 
     public void setView(Img_getterView view) {
         this.view = view;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public void setWidth(int width) {
-        this.width = width;
     }
 
     /*
@@ -133,11 +85,10 @@ public abstract class BaseParser implements Runnable {
      * @parameter boolean wait，是否等到所有文件下载完再继续下一步。
      * @parameter String baseUrl 图像下载地址的前缀
      */
-    public void download(Iterator<String> it, boolean wait, String baseUrl) throws InterruptedException {
+    public void download(List<String> imgs, boolean wait, String baseUrl) throws InterruptedException {
         ThreadPoolExecutor executor = (ThreadPoolExecutor)Executors.newFixedThreadPool(8);
 
-        while (it.hasNext()) {
-            String imgUrl = it.next();
+        for (String imgUrl : imgs) {
             if (view.enableRex()) { //如果需要替换正则表达式字符串
                 imgUrl = rex(imgUrl, view.getFromPattern(), view.getToPattern());
             }
@@ -145,7 +96,7 @@ public abstract class BaseParser implements Runnable {
                 imgUrl = baseUrl + imgUrl;
             }
             
-            executor.submit(new ImgDownloadThread(imgUrl, width, height, path, acceptFormats, view));
+            executor.submit(new ImgDownloadThread(imgUrl, view));
         }
 
         executor.shutdown();
@@ -164,14 +115,12 @@ public abstract class BaseParser implements Runnable {
             int total = getHandler().getExtImg().size() + getHandler().getImg().size();
             view.log(total + " 张图片找到，现在开始下载。");
 
-            Iterator<String> it = getHandler().getExtImg().iterator();
-            download(it, true, null);
+            download(getHandler().getExtImg(), true, null);
 
-            it = getHandler().getImg().iterator();
-            if (it.hasNext() && (getBaseUrl() == null || getBaseUrl().isEmpty())) {
+            if (getHandler().getImg().size() > 0 && (getBaseUrl() == null || getBaseUrl().isEmpty())) {
                 view.log("找到站内图片，但是未设置网站根目录，请设置。例如：\nhttp://www.35.com/abc/abc.jpg，请设置为\nhttp://www.35.com/ 注意最后的/。");
             } else {
-                download(it, true, getBaseUrl());
+                download(getHandler().getImg(), true, getBaseUrl());
             }
 
             view.log("下载完毕！");
